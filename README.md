@@ -1,3 +1,11 @@
+# Structure
+
+Frontend
+ * Reactjs
+
+Backend
+ * Play! framework 2.6.2
+
 # Requirement
 
 ## Node setting for play server
