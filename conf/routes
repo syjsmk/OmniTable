@@ -6,8 +6,10 @@
 # An example controller showing a sample home page
 GET     /                           controllers.RobbyController.index
 GET     /robby                      controllers.RobbyController.index
+GET     /robby/rooms                controllers.RobbyController.getRooms
 
 GET     /room                       controllers.RoomController.index
+#GET     /room/:id                   controllers.RoomController.getRoom(id: Long)
 
 GET     /character                  controllers.CharacterController.index
 
