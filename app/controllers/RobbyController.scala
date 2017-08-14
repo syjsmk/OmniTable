@@ -10,7 +10,7 @@ import org.webjars.play.WebJarsUtil
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
+class RobbyController @Inject()(cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
 
   /**
    * Create an Action to render an HTML page.
@@ -20,17 +20,6 @@ class HomeController @Inject()(cc: ControllerComponents, webJarsUtil: WebJarsUti
    * a path of `/`.
    */
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(webJarsUtil))
+    Ok(views.html.robby(webJarsUtil))
   }
-
-
-//  @()
-//
-//  @main("Welcome to Play") {
-//    <h1>Welcome to Play!</h1>
-//  }
-
-//  @Html(webJarsUtil.script("babel.js"))
-//  <script type='text/javascript' src='@routes.Assets.versioned("javascripts/reactTest.js")'></script>
-
 }

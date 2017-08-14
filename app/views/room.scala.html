@@ -1,0 +1,13 @@
+@(webJarsUtil: org.webjars.play.WebJarsUtil)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    @Html(webJarsUtil.script("react.js"))
+    @Html(webJarsUtil.script("react-dom.js"))
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type='text/javascript' src='@routes.Assets.versioned("javascripts/Room.js")'></script>
+  </body>
+</html>
