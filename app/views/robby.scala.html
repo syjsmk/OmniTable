@@ -5,13 +5,11 @@
   <head>
     @Html(webJarsUtil.script("react.js"))
     @Html(webJarsUtil.script("react-dom.js"))
-    <script src="jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/main.js")'></script>
+    @Html(webJarsUtil.script("jquery.js"))
   </head>
   <body>
     <div id="root"></div>
-    <button id="tmpButton" onclick="getRooms()">asdf</button>
+    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/main.js")'></script>
     <script type='text/javascript' src='@routes.Assets.versioned("javascripts/Robby.js")'></script>
-
   </body>
 </html>
