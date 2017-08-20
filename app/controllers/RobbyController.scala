@@ -26,6 +26,7 @@ class RobbyController @Inject()(cc: ControllerComponents, webJarsUtil: WebJarsUt
   }
 
   def getRooms = Action {
+    println("getRooms")
     val roomInfo = Json.obj("roomId" -> "1")
     val rooms = Json.arr(roomInfo)
     Ok(rooms)

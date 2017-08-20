@@ -2,41 +2,39 @@ class RobbyContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.roomInfo = '';
+        this.state = {
+            roomInfo: null
+        };
+
+        this.getRooms();
+
     }
 
-    async getRooms() {
+    getRooms() {
 
-        var roomInfo = '';
-        var root = 'http://localhost:9000';
+        let root = 'http://localhost:9000';
+        console.log("getRooms before ajax");
 
-
-        roomInfo = await Promise.all([
-            $.get(root + "/robby/rooms",
-                function(data) {
-                    roomInfo = data;
-                }
-            )
-        ]);
-
-        console.log("getRooms");
-        console.log(roomInfo);
-        return roomInfo;
+        $.get([
+            root + "/robby/rooms",
+        ]).done(function(data) {
+            this.setState({roomInfo: data});
+        }.bind(this));
     };
-
-    componentDidMount() {
-        this.roomInfo = this.getRooms();
-        console.log("componentDidMount");
-        console.log(this.roomInfo);
-    }
-
 
 
     render() {
-        this.roomInfo = this.getRooms();
-        return <h1>Robby + {"kjljkl" + this.roomInfo}</h1>;
+        console.log("render");
+
+        if(this.state.roomInfo) {
+            return <h1>Robby + {this.state.roomInfo[0].roomId}</h1>;
+        } else {
+            return <h1>"loading"</h1>;
+        }
+
     }
 }
+
 
 ReactDOM.render(
     <RobbyContainer />,
