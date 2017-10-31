@@ -13,7 +13,14 @@ libraryDependencies ++= Seq(
   "org.webjars" % "react" % "15.2.1",
   "org.webjars" %% "webjars-play" % "2.6.1",
 //  "org.webjars" % "babel" % "6.3.26-1",
-  "org.webjars" % "jquery" % "3.2.1"
+  "org.webjars" % "jquery" % "3.2.1",
+
+  // slick
+  "com.typesafe.play" %% "play-slick" % "3.0.0",
+  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
+
+  // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+  "mysql" % "mysql-connector-java" % "5.1.44"
 )
 
 

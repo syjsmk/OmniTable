@@ -1,14 +1,19 @@
 package domain.model
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
-import com.sun.xml.internal.stream.Entity
+import slick.driver.H2Driver.api._
 
-//@Entity
-class Room {
+//class Room {
+//
+//  var id: Int = _
+//  var name: String = _
+//
+//}
 
-//  @Id
-  var id: Int = _
+case class Room(id: Int, name: String)
 
-  var name: String = _
+class Rooms(tag: Tag) extends Table[Room](tag, "room") {
+  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+  def name = column[String]("name")
 
+  def * = (id, name) <> ((Room.apply _).tupled, Room.unapply)
 }

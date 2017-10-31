@@ -6,7 +6,11 @@
 # An example controller showing a sample home page
 GET     /                           controllers.RobbyController.index
 GET     /robby                      controllers.RobbyController.index
-GET     /robby/rooms                controllers.RobbyController.getRooms
+GET     /robby/rooms                controllers.RobbyController.getRooms()
+
+#이거 없으면 POST 했을 때 문제 생김
++ nocsrf
+POST    /robby                      controllers.RobbyController.makeRoom()
 
 GET     /room                       controllers.RoomController.index
 #GET     /room/:id                   controllers.RoomController.getRoom(id: Long)

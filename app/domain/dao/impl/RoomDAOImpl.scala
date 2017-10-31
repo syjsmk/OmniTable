@@ -1,27 +1,51 @@
 package domain.dao.impl
 
+
+import javax.inject.{Inject, Singleton}
+
 import domain.dao.RoomDAO
-import domain.model.Room
-import play.api.libs.json.Json
+import domain.model.{Room, Rooms}
+import play.api.db.slick.DatabaseConfigProvider
+import slick.jdbc.JdbcProfile
 
-class RoomDAOImpl extends RoomDAO {
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration._
 
-  override def getAll(): Option[Seq[Room]] = {
+class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends RoomDAO {
 
-    val r1: Room = new Room()
-    r1.id = 1
-    r1.name = "first"
-    val r2: Room = new Room()
-    r2.id = 2
-    r2.name = "second"
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
 
-    Some(Seq(r1, r2))
+  import dbConfig._
+  import profile.api._
+
+  val rooms = TableQuery[Rooms]
+
+  override def getAll(): Future[Seq[Room]] = {
+
+    db.run(rooms.result)
   }
 
-  override def create(entity: Room): Option[Room] = ???
+  override def create(entity: Room): Future[Int] = {
 
-  override def findById(entity: Room): Option[Room] = ???
+    val rooms = TableQuery[Rooms]
 
-  override def get(id: Int): Room = ???
+    println(s"entity : $entity")
 
+    val setup = DBIO.seq(
+      rooms += (entity),
+
+      rooms.result.map(println)
+    )
+
+    val setupFuture = db.run(setup)
+    println(s"setupFuture: $setupFuture")
+
+    Future(1)
+  }
+
+  override def get(id: Int) = ???
+
+  override def update(entity: Room) = ???
+
+  override def delete(id: Int) = ???
 }
