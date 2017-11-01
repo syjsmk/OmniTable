@@ -25,22 +25,18 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     db.run(rooms.result)
   }
 
+  //TODO: ID값이 마지막 객체의 ID값 +1이 되는게 아니라 중간에 빈 값에 들어가게
   override def create(entity: Room): Future[Int] = {
 
     val rooms = TableQuery[Rooms]
 
     println(s"entity : $entity")
 
-    val setup = DBIO.seq(
-      rooms += (entity),
+    val setup = rooms returning rooms.map(_.id) += entity
 
-      rooms.result.map(println)
-    )
+    val roomId = db.run(setup)
 
-    val setupFuture = db.run(setup)
-    println(s"setupFuture: $setupFuture")
-
-    Future(1)
+    roomId
   }
 
   override def get(id: Int) = ???

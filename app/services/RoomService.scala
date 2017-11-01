@@ -10,32 +10,26 @@ import domain.model.Room
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // RoomDAO가 아니라 RoomDAOImpl을 DI 하게 되면 그게 의미가 있나?
 class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
-  def makeRoom(name: String): Int = {
+  def makeRoom(name: String): Future[Int] = {
 
     println("RoomService")
     println(s"roomName: $name")
 
-    val room = Room(1, name)
-    val roomId = roomDao.create(room)
+    val roomId = roomDao.create(Room(0, name))
 
-    // 여기에 DB 입출력?
-
-
-    var result: Int = 9
-
-    println(Await.result(roomId, 10 second))
-
-
-    result
+    roomId
   }
 
 
-  def getRooms() = {
-
+  def getRooms(): Future[Seq[Room]] = {
+    roomDao.getAll()
   }
+
+  def updateRoom(entity: Room): Future[Room] = ???
 
 }
