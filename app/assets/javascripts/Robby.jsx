@@ -10,6 +10,7 @@ class RobbyContainer extends React.Component {
 
         this.handleRoomNameChange = this.handleRoomNameChange.bind(this);
         this.makeRoom = this.makeRoom.bind(this);
+        this.showRooms = this.showRooms.bind(this);
 
         this.getRooms();
 
@@ -42,18 +43,42 @@ class RobbyContainer extends React.Component {
 
         $.post(root + "/robby",
             {
-               roomName: this.state.roomName
+                roomName: this.state.roomName
             }).done(function(data) {
-                console.log('done post');
-                console.log(data);
+            console.log('done post');
+            console.log(data);
         });
+
+        this.getRooms();
 
         event.preventDefault();
     }
 
+    showRooms() {
+
+        console.log("showRooms");
+
+        if(this.state.roomInfo !== null) {
+
+            // this.state.roomInfo.map((room, index) => console.log(room));
+            // this.state.roomInfo.map((room, index) => console.log(room.roomName));
+
+            return (
+                this.state.roomInfo.map(
+                    (room, index) => (
+                        <h1 key={room.id}>{room.id}  {room.name}</h1>
+                    )
+                )
+            )
+
+        } else {
+            return <h1>"loading"</h1>;
+        }
+
+    }
+
 
     render() {
-        console.log("render");
 
         return (
             <form onSubmit={this.makeRoom}>
@@ -63,24 +88,10 @@ class RobbyContainer extends React.Component {
                 </label>
                 <input type="submit" value="submit"/>
 
-
-                {this.state.roomInfo !== null ? (
-                    //<h1>Robby + {this.state.roomInfo[0].roomId}</h1>
-
-                    <h1>Robby + {this.state.roomInfo[0].roomId}</h1>
-                ) : (
-                    <h1>"loading"</h1>
-                )}
+                {this.showRooms()}
             </form>
 
         );
-
-        // if(this.state.roomInfo) {
-        //     <h1>Robby + {this.state.roomInfo[0].roomId}</h1>;
-        // } else {
-        //     <h1>"loading"</h1>;
-        // }
-
 
     }
 

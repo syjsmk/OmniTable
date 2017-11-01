@@ -21,7 +21,7 @@ import scala.util.{Failure, Success}
   * application's home page.
   */
 @Singleton
-class RobbyController @Inject()(ec: ExecutionContext, roomDAO: RoomDAOImpl, roomService: RoomService, cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
+class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
 
   /**
     * Create an Action to render an HTML page.
@@ -46,7 +46,7 @@ class RobbyController @Inject()(ec: ExecutionContext, roomDAO: RoomDAOImpl, room
       var roomInfos = new ListBuffer[JsObject]()
       roomSeq.foreach(room => {
 
-        val roomInfo = Json.obj("roomId" -> room.id, "roomName" -> room.name)
+        val roomInfo = Json.obj("id" -> room.id, "name" -> room.name)
         roomInfos += roomInfo
       })
 
@@ -61,7 +61,7 @@ class RobbyController @Inject()(ec: ExecutionContext, roomDAO: RoomDAOImpl, room
     val roomId = roomService.makeRoom(roomName(0))
 
     roomId.map(roomId => {
-      Ok(Json.obj("roomId" -> roomId))
+      Ok(Json.obj("id" -> roomId))
     })
 
   }
