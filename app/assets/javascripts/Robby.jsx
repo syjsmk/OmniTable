@@ -47,9 +47,10 @@ class RobbyContainer extends React.Component {
             }).done(function(data) {
             console.log('done post');
             console.log(data);
-        });
+            this.getRooms();
+        }).bind(this);
 
-        this.getRooms();
+
 
         event.preventDefault();
     }
