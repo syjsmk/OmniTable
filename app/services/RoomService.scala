@@ -22,6 +22,7 @@ class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
     val roomId = roomDao.create(Room(0, name))
 
+    println(s"roomId: $roomId")
     roomId
   }
 

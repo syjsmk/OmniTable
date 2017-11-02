@@ -25,18 +25,30 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     db.run(rooms.result)
   }
 
-  //TODO: ID값이 마지막 객체의 ID값 +1이 되는게 아니라 중간에 빈 값에 들어가게
   override def create(entity: Room): Future[Int] = {
 
     val rooms = TableQuery[Rooms]
 
-    println(s"entity : $entity")
+    var prevRoomId = 0
+    var id = 0
 
-    val setup = rooms returning rooms.map(_.id) += entity
+    db.run(rooms.result).map(seq => {
 
-    val roomId = db.run(setup)
+      seq.foreach(room => {
+        if(room.id - prevRoomId > 1) {
+          id = prevRoomId + 1
+        } else {
+          id = room.id + 1
+        }
 
-    roomId
+        prevRoomId = room.id
+      })
+      
+      db.run(rooms += Room(id, entity.name))
+
+      id
+    })
+
   }
 
   override def get(id: Int) = ???

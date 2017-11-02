@@ -12,7 +12,7 @@ import slick.driver.H2Driver.api._
 case class Room(id: Int, name: String)
 
 class Rooms(tag: Tag) extends Table[Room](tag, "room") {
-  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+  def id = column[Int]("id", O.PrimaryKey)
   def name = column[String]("name")
 
   def * = (id, name) <> ((Room.apply _).tupled, Room.unapply)
