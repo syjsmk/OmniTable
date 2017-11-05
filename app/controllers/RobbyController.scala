@@ -5,6 +5,7 @@ import javax.inject._
 import domain.dao.RoomDAO
 import domain.dao.impl.RoomDAOImpl
 import domain.model.Room
+import domain.model.Formatters._
 import play.api._
 import play.api.mvc._
 import org.webjars.play.WebJarsUtil
@@ -36,21 +37,10 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
   }
 
   def getRooms() = Action.async {
-
     val rooms = roomService.getRooms()
 
     rooms.map(roomSeq => {
-
-      println(s"roomSeq: $roomSeq")
-
-      var roomInfos = new ListBuffer[JsObject]()
-      roomSeq.foreach(room => {
-
-        val roomInfo = Json.obj("id" -> room.id, "name" -> room.name)
-        roomInfos += roomInfo
-      })
-
-      Ok(Json.toJson(roomInfos.toList))
+      Ok(Json.toJson(roomSeq))
     })
   }
 
@@ -66,7 +56,46 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
 
   }
 
+  def updateRoom(id: Int) = Action.async({ implicit request: Request[AnyContent] =>
+
+    println("updateRoom")
+    println(s"id: $id")
+    val roomName = request.body.asFormUrlEncoded.get("roomName")
+    println(roomName)
+
+    //    val updatedRoom = roomService.updateRoom(Room(id, roomName(0)))
+    val updatedRoom = roomService.updateRoom(id, roomName(0))
+
+    updatedRoom.map(option => {
+      option match {
+        case Some(room) => {
+          Ok(Json.obj("id" -> room.name))
+        }
+        case None => {
+          Ok("not found")
+        }
+      }
+
+    })
+
+
+//    updatedRoom.map(option => {
+////      Ok(Json.obj("id" -> option.getOrElse(0)))
+//      Ok(Json.obj("id" => option.getOrElse(0)))
+//    })
+  })
+
+  // val roomName = request.body.asFormUrlEncoded.get("roomName")
+
   //  def showRoom(id: Long) = Action {
   //
   //  }
+
+  def deleteRoom(id: Int) = Action.async {
+
+    println("deleteRoom")
+
+    //TODO: 구현
+    Future(Ok("delete"))
+  }
 }

@@ -11,6 +11,11 @@ GET     /robby/rooms                controllers.RobbyController.getRooms()
 #이거 없으면 POST 했을 때 문제 생김
 + nocsrf
 POST    /robby                      controllers.RobbyController.makeRoom()
++ nocsrf
+POST    /robby/:id                  controllers.RobbyController.updateRoom(id: Int)
+
++ nocsrf
+DELETE  /robby/:id                  controllers.RobbyController.deleteRoom(id: Int)
 
 GET     /room                       controllers.RoomController.index
 #GET     /room/:id                   controllers.RoomController.getRoom(id: Long)

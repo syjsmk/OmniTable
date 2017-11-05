@@ -11,6 +11,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
+
+
 class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends RoomDAO {
 
   val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -26,9 +28,6 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
   }
 
   override def create(entity: Room): Future[Int] = {
-
-    val rooms = TableQuery[Rooms]
-
     var prevRoomId = 0
     var id = 0
 
@@ -51,9 +50,26 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
 
   }
 
-  override def get(id: Int) = ???
+  override def get(id: Int): Future[Option[Room]] = {
 
-  override def update(entity: Room) = ???
+    db.run(rooms.filter(_.id === id).result.headOption)
+
+  }
+
+  override def update(entity: Room): Future[Option[Room]] = {
+
+    println("update")
+
+    val q = for(room <- rooms if room.id === entity.id) yield room.name
+
+    println(s"q : $q")
+    println(s"entity.name: $entity")
+    val updateAction = q.update(entity.name)
+    db.run(updateAction)
+
+
+    this.get(entity.id)
+  }
 
   override def delete(id: Int) = ???
 }

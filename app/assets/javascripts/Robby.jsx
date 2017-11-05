@@ -4,53 +4,92 @@ class RobbyContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            url: 'http://localhost:9000',
             roomInfo: null,
-            roomName: ""
+            roomName: "",
+            selectedRoomId: 0,
+            selectedRoomName: ""
         };
 
         this.handleRoomNameChange = this.handleRoomNameChange.bind(this);
+        this.handleSelectedRoomNameChange = this.handleSelectedRoomNameChange.bind(this);
         this.makeRoom = this.makeRoom.bind(this);
         this.showRooms = this.showRooms.bind(this);
+        this.clickRoom = this.clickRoom.bind(this);
+        this.updateRoom = this.updateRoom.bind(this);
+        this.deleteRoom = this.deleteRoom.bind(this);
 
         this.getRooms();
 
-        this.url = 'http://localhost:9000';
     }
 
 
     handleRoomNameChange(e) {
         this.setState({roomName: e.target.value})
     }
+    handleSelectedRoomNameChange(e) {
+        this.setState({selectedRoomName: e.target.value})
+    }
 
     getRooms() {
 
-        // 이걸 클래스 변수로 바꾸려면 어떻게 해야하는지 모르겠음
-        let root = 'http://localhost:9000';
         console.log("getRooms before ajax");
 
         $.get([
-            root + "/robby/rooms",
+            this.state.url + "/robby/rooms",
         ]).done(function(data) {
             this.setState({roomInfo: data});
         }.bind(this));
+
     };
 
     makeRoom(event) {
         console.log("makeRoom");
-        let root = 'http://localhost:9000';
 
         console.log("roomName : ", this.state.roomName);
 
-        $.post(root + "/robby",
+        $.post(this.state.url + "/robby",
             {
                 roomName: this.state.roomName
             }).done(function(data) {
-            console.log('done post');
-            console.log(data);
+            // console.log('done post');
+            // console.log(data);
             this.getRooms();
-        }).bind(this);
+        }.bind(this));
+
+        event.preventDefault();
+    }
+
+    updateRoom(event) {
+        console.log('updateRoom');
+        console.log(event.target);
+        console.log(this.state.selectedRoomId);
+        console.log(this.state.selectedRoomName);
+
+        $.post(this.state.url + "/robby/" + this.state.selectedRoomId,
+            {
+                roomName: this.state.selectedRoomName
+            }).done(function(data) {
+            // console.log('done post');
+            // console.log(data);
+            this.getRooms();
+        }.bind(this));
+
+        event.preventDefault();
+    }
 
 
+    deleteRoom(event) {
+        console.log('deleteRoom');
+        console.log(this.state.selectedRoomId);
+
+        $.ajax({
+            url: this.state.url + "/robby/" + this.state.selectedRoomId,
+            type: "DELETE",
+            success: function(data) {
+                this.getRooms();
+            }.bind(this)
+        });
 
         event.preventDefault();
     }
@@ -67,7 +106,7 @@ class RobbyContainer extends React.Component {
             return (
                 this.state.roomInfo.map(
                     (room, index) => (
-                        <h1 key={room.id}>{room.id}  {room.name}</h1>
+                        <h1 id={room.id} name={room.name} onClick={this.clickRoom} key={room.id}>{room.id}  {room.name}</h1>
                     )
                 )
             )
@@ -78,19 +117,58 @@ class RobbyContainer extends React.Component {
 
     }
 
+    clickRoom(event) {
+
+        console.log("clickRoom");
+        console.log(event.target);
+        console.log(event.target.getAttribute('id'));
+        console.log(event.target.getAttribute('name'));
+
+        this.setState({
+            selectedRoomId: event.target.getAttribute('id'),
+            selectedRoomName: event.target.getAttribute('name')
+        });
+        // var inputElement = document.getElementById('update').firstElementChild.firstElementChild;
+        // console.log(inputElement);
+        // inputElement.setAttribute('value', event.target.getAttribute('name'));
+
+    }
+
+
 
     render() {
 
         return (
-            <form onSubmit={this.makeRoom}>
-                <label>
-                    Room name :
-                    <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
-                </label>
-                <input type="submit" value="submit"/>
+            <form>
+
+                <di id={'create'}>
+                    <label>
+                        Room name :
+                        <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
+                    </label>
+                    <button type={'button'} onClick={event => this.makeRoom(event)}>create</button>
+                </di>
+
+                <di id={'update'}>
+                    <label>
+                        selected Room name :
+                        <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+                    </label>
+                    <button type={'button'} onClick={this.updateRoom}>update</button>
+                </di>
+
+                <di id={'update'}>
+                    <label>
+                        selected Room name :
+                        <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+                    </label>
+                    <button type={'button'} onClick={this.deleteRoom}>delete</button>
+                </di>
 
                 {this.showRooms()}
+
             </form>
+
 
         );
 
