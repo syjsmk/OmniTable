@@ -95,7 +95,11 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
 
     println("deleteRoom")
 
-    //TODO: 구현
-    Future(Ok("delete"))
+    val deletedRoomId = roomService.deleteRoom(id)
+
+    deletedRoomId.map(id => {
+      Ok(Json.obj("id" -> id))
+    })
+
   }
 }

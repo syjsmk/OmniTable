@@ -17,12 +17,8 @@ class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
   def makeRoom(name: String): Future[Int] = {
 
-    println("RoomService")
-    println(s"roomName: $name")
-
     val roomId = roomDao.create(Room(0, name))
 
-    println(s"roomId: $roomId")
     roomId
   }
 
@@ -33,21 +29,20 @@ class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
   def updateRoom(entity: Room): Future[Option[Room]] = {
 
-//    val room = roomDao.get(entity.id)
-//
-//    room.map(option => {
-//      println("getOrElse")
-//      println(option.getOrElse(None))
-//    })
     val room = roomDao.update(entity)
 
-    println(room)
     room
   }
 
   def updateRoom(id: Int, name: String): Future[Option[Room]] = {
 
     this.updateRoom(Room(id, name))
+  }
+
+  def deleteRoom(id: Int): Future[Int] = {
+
+   roomDao.delete(id)
+
   }
 
 }
