@@ -1,15 +1,47 @@
 class RobbyContainer extends React.Component {
 
-
     constructor(props) {
         super(props);
+
+        this.OPEN = "!OPEN";
+        this.MAKE = "!MAKE";
+        this.UPDATE = "!UPDATE";
+        this.DELETE = "!DELETE";
+        this.CLOSE = "!CLOSE";
+
         this.state = {
             url: 'http://localhost:9000',
             roomInfo: null,
             roomName: "",
             selectedRoomId: 0,
             selectedRoomName: ""
+            ,connection: new WebSocket('ws://localhost:9000/robby/websocket')
+
         };
+
+
+        this.state.connection.onopen = function () {
+            this.state.connection.send(this.OPEN); //
+        }.bind(this);
+
+
+        this.state.connection.onerror = function (error) {
+            console.log('WebSocket Error ' + error);
+            console.log(error);
+        }.bind(this);
+
+        //to receive the message from server
+        this.state.connection.onmessage = function (e) {
+            console.log('message from server: ' + e.data);
+            this.getRooms();
+        }.bind(this);
+
+        this.state.connection.onclose = function (e) {
+
+            this.state.connection.send(this.CLOSE);
+            console.log("onClose");
+
+        }.bind(this);
 
         this.handleRoomNameChange = this.handleRoomNameChange.bind(this);
         this.handleSelectedRoomNameChange = this.handleSelectedRoomNameChange.bind(this);
@@ -19,10 +51,27 @@ class RobbyContainer extends React.Component {
         this.updateRoom = this.updateRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
 
+        this.handleWindowClose = this.handleWindowClose.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+
         this.getRooms();
 
     }
 
+    handleWindowClose() {
+        this.state.connection.send(this.CLOSE);
+    }
+
+    componentDidMount() {
+        console.log("didMount");
+        window.addEventListener('beforeunload', this.handleWindowClose);
+    }
+
+    componentWillUnmount() {
+        console.log("unmount");
+        window.removeEventListener('beforeunload', this.handleWindowClose);
+    }
 
     handleRoomNameChange(e) {
         this.setState({roomName: e.target.value})
@@ -31,9 +80,10 @@ class RobbyContainer extends React.Component {
         this.setState({selectedRoomName: e.target.value})
     }
 
+
     getRooms() {
 
-        console.log("getRooms before ajax");
+        console.log("getRooms");
 
         $.get([
             this.state.url + "/robby/rooms",
@@ -45,7 +95,6 @@ class RobbyContainer extends React.Component {
 
     makeRoom(event) {
         console.log("makeRoom");
-
         console.log("roomName : ", this.state.roomName);
 
         $.post(this.state.url + "/robby",
@@ -55,6 +104,7 @@ class RobbyContainer extends React.Component {
             // console.log('done post');
             // console.log(data);
             this.getRooms();
+            this.state.connection.send(this.MAKE); //
         }.bind(this));
 
         event.preventDefault();
@@ -73,6 +123,7 @@ class RobbyContainer extends React.Component {
             // console.log('done post');
             // console.log(data);
             this.getRooms();
+            this.state.connection.send(this.UPDATE);
         }.bind(this));
 
         event.preventDefault();
@@ -88,6 +139,7 @@ class RobbyContainer extends React.Component {
             type: "DELETE",
             success: function(data) {
                 this.getRooms();
+                this.state.connection.send(this.DELETE);
             }.bind(this)
         });
 
@@ -99,9 +151,6 @@ class RobbyContainer extends React.Component {
         console.log("showRooms");
 
         if(this.state.roomInfo !== null) {
-
-            // this.state.roomInfo.map((room, index) => console.log(room));
-            // this.state.roomInfo.map((room, index) => console.log(room.roomName));
 
             return (
                 this.state.roomInfo.map(
@@ -128,13 +177,8 @@ class RobbyContainer extends React.Component {
             selectedRoomId: event.target.getAttribute('id'),
             selectedRoomName: event.target.getAttribute('name')
         });
-        // var inputElement = document.getElementById('update').firstElementChild.firstElementChild;
-        // console.log(inputElement);
-        // inputElement.setAttribute('value', event.target.getAttribute('name'));
 
     }
-
-
 
     render() {
 
