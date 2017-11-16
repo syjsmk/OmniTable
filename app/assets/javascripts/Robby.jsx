@@ -169,14 +169,18 @@ class RobbyContainer extends React.Component {
     clickRoom(event) {
 
         console.log("clickRoom");
-        console.log(event.target);
-        console.log(event.target.getAttribute('id'));
-        console.log(event.target.getAttribute('name'));
+        // console.log(event.target);
+        // console.log(event.target.getAttribute('id'));
+        // console.log(event.target.getAttribute('name'));
+        // console.log(this.state.selectedRoomId);
+        // console.log(this.state.selectedRoomName);
 
         this.setState({
             selectedRoomId: event.target.getAttribute('id'),
             selectedRoomName: event.target.getAttribute('name')
         });
+
+        window.location.href = this.state.url + "/room/" + event.target.getAttribute('id');
 
     }
 
@@ -201,9 +205,9 @@ class RobbyContainer extends React.Component {
                     <button type={'button'} onClick={this.updateRoom}>update</button>
                 </di>
 
-                <di id={'update'}>
+                <di id={'delete'}>
                     <label>
-                        selected Room name :
+                        Room name for delete :
                         <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
                     </label>
                     <button type={'button'} onClick={this.deleteRoom}>delete</button>

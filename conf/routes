@@ -18,8 +18,12 @@ POST    /robby/:id                  controllers.RobbyController.updateRoom(id: I
 + nocsrf
 DELETE  /robby/:id                  controllers.RobbyController.deleteRoom(id: Int)
 
-GET     /room                       controllers.RoomController.index
-#GET     /room/:id                   controllers.RoomController.getRoom(id: Long)
+#GET     /room                       controllers.RoomController.index
+#GET     /room/:id                   controllers.RoomController.getRoom(id: Int)
+GET     /room/:id                   controllers.RoomController.index(id: Int)
+GET     /room/data/:id              controllers.RoomController.getRoom(id: Int)
+
+
 
 GET     /character                  controllers.CharacterController.index
 
