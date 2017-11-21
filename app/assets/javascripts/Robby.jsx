@@ -1,3 +1,4 @@
+
 class RobbyContainer extends React.Component {
 
     constructor(props) {
@@ -194,7 +195,7 @@ class RobbyContainer extends React.Component {
                         Room name :
                         <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
                     </label>
-                    <button type={'button'} onClick={event => this.makeRoom(event)}>create</button>
+                    <button className="ui button" type={'button'} onClick={event => this.makeRoom(event)}>create</button>
                 </di>
 
                 <di id={'update'}>
@@ -202,7 +203,7 @@ class RobbyContainer extends React.Component {
                         selected Room name :
                         <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
                     </label>
-                    <button type={'button'} onClick={this.updateRoom}>update</button>
+                    <button className="ui button" type={'button'} onClick={this.updateRoom}>update</button>
                 </di>
 
                 <di id={'delete'}>
@@ -210,7 +211,7 @@ class RobbyContainer extends React.Component {
                         Room name for delete :
                         <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
                     </label>
-                    <button type={'button'} onClick={this.deleteRoom}>delete</button>
+                    <button className="ui button" type={'button'} onClick={this.deleteRoom}>delete</button>
                 </di>
 
                 {this.showRooms()}
