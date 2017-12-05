@@ -50,8 +50,7 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
   def makeRoom() = Action.async { implicit request: Request[AnyContent] =>
 
     val roomName = request.body.asFormUrlEncoded.get("roomName")
-
-    val roomId = roomService.makeRoom(roomName(0))
+    val roomId = roomService.makeRoom(roomName(0), 0)
 
     roomId.map(roomId => {
       Ok(Json.obj("id" -> roomId))
@@ -64,14 +63,15 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
     println("updateRoom")
     println(s"id: $id")
     val roomName = request.body.asFormUrlEncoded.get("roomName")
+    val userCount = request.body.asJson.get("userCount").as[Int]
     println(roomName)
 
-    val updatedRoom = roomService.updateRoom(id, roomName(0))
+    val updatedRoom = roomService.updateRoom(id, roomName(0), userCount)
 
     updatedRoom.map(option => {
       option match {
         case Some(room) => {
-          Ok(Json.obj("id" -> room.name))
+          Ok(Json.obj("id" -> room.id))
         }
         case None => {
           Ok("not found")
@@ -119,6 +119,7 @@ class RoomsActor(actorRef: ActorRef) extends Actor {
   val DELETE = "!DELETE"
   val CLOSE = "!CLOSE"
 
+  // 유저 사이즈 감소가 제대로 안되는 경우가 있는거 같음.
   def receive = {
 
     case CLOSE => {
@@ -137,6 +138,7 @@ class RoomsActor(actorRef: ActorRef) extends Actor {
       RoomsActor.users.foreach(_ ! OPEN)
     }
 
+    // make 했을 때 유저 수가 늘어나는 경우 있음?
     case MAKE => {
       println(MAKE)
       RoomsActor.users.foreach(_ ! MAKE)

@@ -8,6 +8,7 @@ import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Reque
 import services.RoomService
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class RoomController @Inject()(roomService: RoomService, cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
@@ -44,5 +45,23 @@ class RoomController @Inject()(roomService: RoomService, cc: ControllerComponent
       }
     })
 
+  }
+
+
+  def changeUserCount(id: Int) = Action.async { implicit request: Request[AnyContent] =>
+
+    val value = request.body.asFormUrlEncoded.get("value").head.toInt
+    val updatedRoom = roomService.changeUserCount(id, value)
+
+    updatedRoom.map(option => {
+      option match {
+        case Some(room) => {
+          Ok(Json.obj("id" -> room.id, "name" -> room.name, "userCount" -> room.userCount))
+        }
+        case None => {
+          Ok("None")
+        }
+      }
+    })
   }
 }

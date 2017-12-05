@@ -1,6 +1,7 @@
 
 class RobbyContainer extends React.Component {
 
+
     constructor(props) {
         super(props);
 
@@ -9,6 +10,10 @@ class RobbyContainer extends React.Component {
         this.UPDATE = "!UPDATE";
         this.DELETE = "!DELETE";
         this.CLOSE = "!CLOSE";
+
+        this.DEFAULT_USER_COUNT = 0;
+        this.INCREASE = "1";
+        this.DECREASE = "-1";
 
         this.state = {
             url: 'http://localhost:9000',
@@ -51,6 +56,7 @@ class RobbyContainer extends React.Component {
         this.clickRoom = this.clickRoom.bind(this);
         this.updateRoom = this.updateRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
+        this.changeUserCount = this.changeUserCount.bind(this);
 
         this.handleWindowClose = this.handleWindowClose.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -94,6 +100,9 @@ class RobbyContainer extends React.Component {
 
     };
 
+    /*
+    room을 만들 시 생성 후 바로 해당 room으로 이동
+    */
     makeRoom(event) {
         console.log("makeRoom");
         console.log("roomName : ", this.state.roomName);
@@ -102,13 +111,31 @@ class RobbyContainer extends React.Component {
             {
                 roomName: this.state.roomName
             }).done(function(data) {
-            // console.log('done post');
-            // console.log(data);
+
             this.getRooms();
             this.state.connection.send(this.MAKE); //
+            this.changeUserCount(data.id, this.DEFAULT_USER_COUNT + this.INCREASE);
+
         }.bind(this));
 
         event.preventDefault();
+    }
+
+    // 줄이고 늘리고를 value로
+    changeUserCount(roomId, value) {
+        console.log("changeUserCount");
+
+        $.post(this.state.url + "/room/" + roomId,
+            {
+                value: value
+            }
+        ).done(function(data) {
+
+            console.log("userCount : " + data.userCount);
+            window.location.href = this.state.url + "/room/" + roomId;
+
+        }.bind(this));
+
     }
 
     updateRoom(event) {
@@ -156,7 +183,17 @@ class RobbyContainer extends React.Component {
             return (
                 this.state.roomInfo.map(
                     (room, index) => (
-                        <h1 id={room.id} name={room.name} onClick={this.clickRoom} key={room.id}>{room.id}  {room.name}</h1>
+                        <div className={"item"} key={room.id}>
+                            <div id={"room_id"}>
+                                {room.id}
+                            </div>
+
+                            <div className={"content"}>
+                                <text className={"header"}>{room.name}</text>
+                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>{room.id}  {room.name}</div>
+                            </div>
+                        </div>
+
                     )
                 )
             )
@@ -187,37 +224,84 @@ class RobbyContainer extends React.Component {
 
     render() {
 
+        var roomsLayout = {
+            margin: 0
+        };
+
         return (
             <form>
 
-                <di id={'create'}>
-                    <label>
-                        Room name :
-                        <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
-                    </label>
-                    <button className="ui button" type={'button'} onClick={event => this.makeRoom(event)}>create</button>
-                </di>
+                <div id={"user_info"} className={"ui fixed menu"}>
+                    <div className={"ui container"}>
+                        <a href={"#"} className={"header item"}>
+                            user_info
+                        </a>
+                        <a href={"#"} className={"item"}>
+                            item
+                        </a>
+                        <div className={"ui simple dropdown item"}>
+                            dropdown
+                            <i className={"dropdown icon"}></i>
+                            <div className={"menu"}>
+                                <a className={"item"} href="#">Link Item</a>
+                                <a className={"item"} href="#">Link Item</a>
+                                <div className={"divider"}></div>
+                                <div className={"header"}>Header Item</div>
+                                <div className={"item"}>
+                                    <i className={"dropdown icon"}></i>
+                                    Sub Menu
+                                    <div className={"menu"}>
+                                        <a className={"item"} href="#">Link Item</a>
+                                        <a className={"item"} href="#">Link Item</a>
+                                    </div>
+                                </div>
+                                <a className={"item"} href="#">Link Item</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <di id={'update'}>
-                    <label>
-                        selected Room name :
-                        <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
-                    </label>
-                    <button className="ui button" type={'button'} onClick={this.updateRoom}>update</button>
-                </di>
+                {/*Responsive item?  https://semantic-ui.com/examples/responsive.html  */}
+                {/*<div id={"rooms"} className={"ui content list"}>*/}
+                {/*empty slot for layout*/}
+                <div className={"ui menu"} style={roomsLayout}>
+                </div>
+                <div className={"ui relaxed fixed"}>
+                    메뉴
+                </div>
+                <div id={"rooms"} className={"ui relaxed divided items"}>
 
-                <di id={'delete'}>
-                    <label>
-                        Room name for delete :
-                        <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
-                    </label>
-                    <button className="ui button" type={'button'} onClick={this.deleteRoom}>delete</button>
-                </di>
+                    {this.showRooms()}
 
-                {this.showRooms()}
+                </div>
+
+                <div id={"room_interaction"} className={"ui footer list"}>
+                    <div id={'create'} className={"ui item"}>
+                        <label>
+                            Room name :
+                            <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
+                        </label>
+                        <button className="ui button" type={'button'} onClick={event => this.makeRoom(event)}>create</button>
+                    </div>
+
+                    <div id={'update'} className={"ui item"}>
+                        <label>
+                            selected Room name :
+                            <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+                        </label>
+                        <button className="ui button" type={'button'} onClick={this.updateRoom}>update</button>
+                    </div>
+
+                    <div id={'delete'} className={"ui item"}>
+                        <label>
+                            Room name for delete :
+                            <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+                        </label>
+                        <button className="ui button" type={'button'} onClick={this.deleteRoom}>delete</button>
+                    </div>
+                </div>
 
             </form>
-
 
         );
 

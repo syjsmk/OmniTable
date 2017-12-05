@@ -23,6 +23,10 @@ DELETE  /robby/:id                  controllers.RobbyController.deleteRoom(id: I
 GET     /room/:id                   controllers.RoomController.index(id: Int)
 GET     /room/data/:id              controllers.RoomController.getRoom(id: Int)
 
+# id를 userId, roomId로 나눠야 하지 않을까?
++ nocsrf
+POST    /room/:id                   controllers.RoomController.changeUserCount(id: Int)
+
 
 
 GET     /character                  controllers.CharacterController.index

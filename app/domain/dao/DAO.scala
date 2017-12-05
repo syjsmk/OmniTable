@@ -9,5 +9,6 @@ trait DAO[T] {
   def get(id: Int): Future[Option[T]]
   def update(entity: T): Future[Option[T]]
   def delete(id: Int): Future[Int]
+  def update(id: Int, attrName: String, attrValue: Any): Future[Option[T]]
 
 }

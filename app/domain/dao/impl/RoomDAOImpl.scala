@@ -24,6 +24,9 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
 
   val rooms = TableQuery[Rooms]
 
+  val ROOM_NAME = "name"
+  val USER_COUNT = "userCount"
+
   override def getAll(): Future[Seq[Room]] = {
 
     db.run(rooms.result)
@@ -49,7 +52,7 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
         }
       }
 
-      db.run(rooms += Room(id, entity.name))
+      db.run(rooms += Room(id, entity.name, entity.userCount))
 
       id
     })
@@ -73,7 +76,28 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     this.get(entity.id)
   }
 
+  override def update(id: Int, attrName: String, attrValue: Any): Future[Option[Room]] = {
+
+    attrName match {
+      case ROOM_NAME => {
+        val q = rooms.filter(_.id === id).map(room => {
+          room.name
+        }).update(attrValue.toString)
+        db.run(q)
+      }
+      case USER_COUNT => {
+        val q = rooms.filter(_.id === id).map(room => {
+          room.userCount
+        }).update(attrValue.toString.toInt)
+        db.run(q)
+      }
+    }
+
+    this.get(id)
+  }
+
   override def delete(id: Int): Future[Int] = {
     db.run(rooms.filter(_.id === id).delete)
   }
+
 }
