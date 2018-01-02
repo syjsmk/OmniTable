@@ -190,7 +190,9 @@ class RobbyContainer extends React.Component {
 
                             <div className={"content"}>
                                 <text className={"header"}>{room.name}</text>
-                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>{room.id}  {room.name}</div>
+                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.id : {room.id}</div>
+                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.name : {room.name}</div>
+                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.userCount : {room.userCount}</div>
                             </div>
                         </div>
 

@@ -2,8 +2,9 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import domain.model.{DataWriter, Room}
 import org.webjars.play.WebJarsUtil
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Writes}
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 import services.RoomService
 
@@ -13,13 +14,18 @@ import scala.concurrent.Future
 @Singleton
 class RoomController @Inject()(roomService: RoomService, cc: ControllerComponents, webJarsUtil: WebJarsUtil) extends AbstractController(cc) {
 
+  val dataWriter = new DataWriter()
+
   def index(id: Int) = Action { implicit request: Request[AnyContent] =>
 
     println("RoomController index")
     println(id)
 
+
+
     Ok(views.html.room(webJarsUtil: WebJarsUtil, id))
   }
+
 
   def getRoom(id: Int) = Action.async {
 
@@ -38,7 +44,7 @@ class RoomController @Inject()(roomService: RoomService, cc: ControllerComponent
 
     room.map(_ match {
       case Some(room) => {
-        Ok(Json.obj("id" -> room.id, "name" -> room.name))
+        Ok(Json.toJson(room)(dataWriter.roomWrites))
       }
       case None => {
         Ok("None")
