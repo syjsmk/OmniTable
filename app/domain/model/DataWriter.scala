@@ -9,8 +9,7 @@ class DataWriter {
   implicit val roomWrites = new Writes[Room] {
     override def writes(room: Room) = Json.obj(
       "id" -> room.id,
-      "name" -> room.name,
-      "userCount" -> room.userCount
+      "name" -> room.name
     )
   }
 

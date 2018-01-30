@@ -15,23 +15,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 // RoomDAO가 아니라 RoomDAOImpl을 DI 하게 되면 그게 의미가 있나?
 class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
-
-  def changeUserCount(id: Int, value: Int) = {
-
-    roomDao.update(id, "userCount", value)
-  }
-
-
   def getRoom(id: Int): Future[Option[Room]] = {
 
     roomDao.get(id)
 
   }
 
-
   def makeRoom(name: String, userCount: Int): Future[Int] = {
 
-    val roomId = roomDao.create(Room(0, name, userCount))
+    val roomId = roomDao.create(Room(0, name))
 
     roomId
   }

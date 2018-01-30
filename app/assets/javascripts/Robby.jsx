@@ -1,9 +1,10 @@
 
 class RobbyContainer extends React.Component {
 
-
     constructor(props) {
         super(props);
+
+        this.constants = new Constants();
 
         this.OPEN = "!OPEN";
         this.MAKE = "!MAKE";
@@ -11,17 +12,13 @@ class RobbyContainer extends React.Component {
         this.DELETE = "!DELETE";
         this.CLOSE = "!CLOSE";
 
-        this.DEFAULT_USER_COUNT = 0;
-        this.INCREASE = "1";
-        this.DECREASE = "-1";
-
         this.state = {
-            url: 'http://localhost:9000',
+            url: this.constants.URL,
             roomInfo: null,
             roomName: "",
             selectedRoomId: 0,
-            selectedRoomName: ""
-            ,connection: new WebSocket('ws://localhost:9000/robby/websocket')
+            selectedRoomName: "",
+            connection: new WebSocket(this.constants.ROBBY_WEBSOCKET_URL)
 
         };
 
@@ -56,7 +53,6 @@ class RobbyContainer extends React.Component {
         this.clickRoom = this.clickRoom.bind(this);
         this.updateRoom = this.updateRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
-        this.changeUserCount = this.changeUserCount.bind(this);
 
         this.handleWindowClose = this.handleWindowClose.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -114,28 +110,10 @@ class RobbyContainer extends React.Component {
 
             this.getRooms();
             this.state.connection.send(this.MAKE); //
-            this.changeUserCount(data.id, this.DEFAULT_USER_COUNT + this.INCREASE);
 
         }.bind(this));
 
         event.preventDefault();
-    }
-
-    // 줄이고 늘리고를 value로
-    changeUserCount(roomId, value) {
-        console.log("changeUserCount");
-
-        $.post(this.state.url + "/room/" + roomId,
-            {
-                value: value
-            }
-        ).done(function(data) {
-
-            console.log("userCount : " + data.userCount);
-            window.location.href = this.state.url + "/room/" + roomId;
-
-        }.bind(this));
-
     }
 
     updateRoom(event) {
@@ -192,7 +170,6 @@ class RobbyContainer extends React.Component {
                                 <text className={"header"}>{room.name}</text>
                                 <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.id : {room.id}</div>
                                 <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.name : {room.name}</div>
-                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.userCount : {room.userCount}</div>
                             </div>
                         </div>
 

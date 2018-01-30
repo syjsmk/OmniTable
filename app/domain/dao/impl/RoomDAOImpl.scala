@@ -25,7 +25,6 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
   val rooms = TableQuery[Rooms]
 
   val ROOM_NAME = "name"
-  val USER_COUNT = "userCount"
 
   override def getAll(): Future[Seq[Room]] = {
 
@@ -52,7 +51,7 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
         }
       }
 
-      db.run(rooms += Room(id, entity.name, entity.userCount))
+      db.run(rooms += Room(id, entity.name))
 
       id
     })
@@ -83,12 +82,6 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
         val q = rooms.filter(_.id === id).map(room => {
           room.name
         }).update(attrValue.toString)
-        db.run(q)
-      }
-      case USER_COUNT => {
-        val q = rooms.filter(_.id === id).map(room => {
-          room.userCount
-        }).update(attrValue.toString.toInt)
         db.run(q)
       }
     }

@@ -63,10 +63,10 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
     println("updateRoom")
     println(s"id: $id")
     val roomName = request.body.asFormUrlEncoded.get("roomName")
-    val userCount = request.body.asJson.get("userCount").as[Int]
     println(roomName)
 
-    val updatedRoom = roomService.updateRoom(id, roomName(0), userCount)
+    val NAME = "name"
+    val updatedRoom = roomService.updateRoom(id, NAME, roomName(0))
 
     updatedRoom.map(option => {
       option match {
@@ -98,7 +98,7 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
 
     ActorFlow.actorRef { out =>
 
-      RoomsActor.props(out)
+      RobbyActor.props(out)
     }
   }
 
@@ -106,12 +106,12 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
 
 
 // class와 object의 이름을 똑같이 만드는건 관습적인 것?
-object RoomsActor {
+object RobbyActor {
   var users = List[ActorRef]()
-  def props(out: ActorRef) = Props(new RoomsActor(out))
+  def props(out: ActorRef) = Props(new RobbyActor(out))
 }
 
-class RoomsActor(actorRef: ActorRef) extends Actor {
+class RobbyActor(actorRef: ActorRef) extends Actor {
 
   val OPEN = "!OPEN"
   val MAKE = "!MAKE"
@@ -125,33 +125,36 @@ class RoomsActor(actorRef: ActorRef) extends Actor {
     case CLOSE => {
       println(CLOSE)
 
-      RoomsActor.users = RoomsActor.users.filterNot(user => user == actorRef)
-      println("usersize : " + RoomsActor.users.size)
+      RobbyActor.users = RobbyActor.users.filterNot(user => user == actorRef)
+      println("usersize : " + RobbyActor.users.size)
 
     }
 
     case OPEN => {
 
       println(OPEN)
-      RoomsActor.users = (actorRef) :: RoomsActor.users
-      println("usersize : " + RoomsActor.users.size)
-      RoomsActor.users.foreach(_ ! OPEN)
+
+      RobbyActor.users = (actorRef) :: RobbyActor.users
+
+      println("usersize : " + RobbyActor.users.size)
+      println(RobbyActor.users)
+      RobbyActor.users.foreach(_ ! OPEN)
     }
 
     // make 했을 때 유저 수가 늘어나는 경우 있음?
     case MAKE => {
       println(MAKE)
-      RoomsActor.users.foreach(_ ! MAKE)
+      RobbyActor.users.foreach(_ ! MAKE)
     }
 
     case UPDATE => {
       println(UPDATE)
-      RoomsActor.users.foreach(_ ! UPDATE)
+      RobbyActor.users.foreach(_ ! UPDATE)
     }
 
     case DELETE => {
       println(DELETE)
-      RoomsActor.users.foreach(_ ! DELETE)
+      RobbyActor.users.foreach(_ ! DELETE)
     }
 
       // OPEN, CLOSE이외의 다른 메시지에 대해서는 이렇게 못하나?
