@@ -76,27 +76,28 @@ class RoomActor(actorRef: ActorRef, id: Int) extends Actor {
     case JOIN => {
       println("!JOIN")
 
-      var members = RoomActor.membersMap.getOrElse(id, {
-        println("not exist")
-        RoomActor.membersMap += (id -> List())
-        RoomActor.membersMap(id)
-      })
-
-      members = (actorRef) :: members
-      RoomActor.membersMap = RoomActor.membersMap.updated(id, members)
-
       RoomActor.membersMap.get(id) match {
         case Some(members) => {
-          println(members)
-          println(members.size)
+//          println(members)
+//          println(members.size)
+
+          val updatedMembers = actorRef :: members
+          updatedMembers.foreach(actor => {
+            actor ! JOIN
+          })
+
+          RoomActor.membersMap = RoomActor.membersMap.updated(id, updatedMembers)
+
+        }
+
+        case None => {
+          println("Room member is not exist")
+
+          RoomActor.membersMap += (id -> List(actorRef))
+          actorRef ! JOIN
         }
       }
 
-      RoomActor.membersMap.get(id).foreach(_
-        foreach(actor => {
-        actor ! JOIN
-      })
-      )
 
       println(RoomActor.membersMap)
 
@@ -111,11 +112,15 @@ class RoomActor(actorRef: ActorRef, id: Int) extends Actor {
         case Some(members) => {
           changedMembers = members.filterNot(user => user == actorRef)
 
-          if(changedMembers.size == 0) {
+          if(changedMembers.isEmpty) {
             RoomActor.membersMap.remove(id)
           } else {
             RoomActor.membersMap.update(id, changedMembers)
           }
+        }
+
+        case None => {
+          println("Room member is not exist")
         }
       }
 
