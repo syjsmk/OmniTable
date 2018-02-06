@@ -1,6 +1,6 @@
 package domain.model
 
-import slick.driver.H2Driver.api._
+import slick.jdbc.H2Profile.api._
 import play.api.libs.json._
 
 //class Room {
@@ -23,4 +23,5 @@ class Rooms(tag: Tag) extends Table[Room](tag, "room") {
 
 object Formatters {
   implicit val roomFormat = Json.format[Room]
+  implicit val messageFormat = Json.format[Message]
 }
