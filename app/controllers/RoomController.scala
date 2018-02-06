@@ -70,58 +70,102 @@ class RoomActor(actorRef: ActorRef, id: Int) extends Actor {
 
   val JOIN = "!JOIN"
   val EXIT = "!EXIT"
+  val MESSAGE = "!MESSAGE"
+
 
   override def receive = {
 
-    case JOIN => {
-      println("!JOIN")
+    case receivedData: String => {
 
-      RoomActor.membersMap.get(id) match {
-        case Some(members) => {
-//          println(members)
-//          println(members.size)
+      val data = Json.parse(receivedData)
+      val messageType = (data \ "type").get.as[String]
 
-          val updatedMembers = actorRef :: members
-          updatedMembers.foreach(actor => {
-            actor ! JOIN
-          })
+      messageType match {
 
-          RoomActor.membersMap = RoomActor.membersMap.updated(id, updatedMembers)
+        case JOIN => {
+          println("!JOIN")
+
+          RoomActor.membersMap.get(id) match {
+            case Some(members) => {
+              //          println(members)
+              //          println(members.size)
+
+              val updatedMembers = actorRef :: members
+              updatedMembers.foreach(actor => {
+//                actor ! JOIN
+                actor ! Json.obj("type" -> JOIN).toString()
+              })
+
+              RoomActor.membersMap = RoomActor.membersMap.updated(id, updatedMembers)
+
+            }
+
+            case None => {
+              println("Room member is not exist")
+
+              RoomActor.membersMap += (id -> List(actorRef))
+//              actorRef ! JOIN
+              actorRef ! Json.obj("type" -> JOIN).toString()
+            }
+          }
+
+
+          println(RoomActor.membersMap)
 
         }
 
-        case None => {
-          println("Room member is not exist")
+        case MESSAGE => {
 
-          RoomActor.membersMap += (id -> List(actorRef))
-          actorRef ! JOIN
-        }
-      }
+          val time = (data \ "time").get.as[String]
+          val sender = (data \ "sender").get.as[String]
+          val message = (data \ "message").get.as[String]
 
+//          println(s"time: $time, sender: $sender, message: $message")
 
-      println(RoomActor.membersMap)
+          RoomActor.membersMap.get(id) match {
+            case Some(members) => {
+//              members.foreach(_ ! MESSAGE)
 
-    }
+              // TODO: 여기서 toString으로 보내고 프론트엔드에서 JSON.parse를 해서 쓰는게 적절한 처리인가?
+              members.foreach(_ ! Json.obj("type" -> MESSAGE, "time" -> time, "sender" -> sender, "message" -> message).toString())
 
-
-    case EXIT => {
-
-      var changedMembers = List[ActorRef]()
-
-      RoomActor.membersMap.get(id) match {
-        case Some(members) => {
-          changedMembers = members.filterNot(user => user == actorRef)
-
-          if(changedMembers.isEmpty) {
-            RoomActor.membersMap.remove(id)
-          } else {
-            RoomActor.membersMap.update(id, changedMembers)
+              // TODO: 여기서 해당 메시지 DB 저장 및 room에 join시 DB에서 메시지 읽어오게 해야 함
+            }
+            case None => {
+              println("Room member is not exist")
+            }
           }
         }
 
-        case None => {
-          println("Room member is not exist")
+
+        case EXIT => {
+
+          println(EXIT)
+
+          var changedMembers = List[ActorRef]()
+
+          RoomActor.membersMap.get(id) match {
+            case Some(members) => {
+              changedMembers = members.filterNot(user => user == actorRef)
+
+              if(changedMembers.isEmpty) {
+                RoomActor.membersMap.remove(id)
+              } else {
+                RoomActor.membersMap.update(id, changedMembers)
+              }
+            }
+
+            case None => {
+              println("Room member is not exist")
+            }
+          }
+
         }
+
+        case _ => {
+          println("not defined case")
+        }
+
       }
 
     }

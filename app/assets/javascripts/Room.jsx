@@ -7,16 +7,21 @@ class Room extends React.Component {
 
         this.JOIN = "!JOIN";
         this.EXIT = "!EXIT";
+        this.MESSAGE = "!MESSAGE";
 
         // 선택한 room의 id는 room.scala.html에서 바인딩된 값을 사용함
         this.state = {
             url: this.constants.URL,
             id: roomId,
+            message: '',
             connection: new WebSocket("ws://localhost:9000/room/" + roomId + "/websocket")
         };
 
         this.state.connection.onopen = function () {
-            this.state.connection.send(this.JOIN); //
+            // this.state.connection.send(this.JOIN); //
+            this.state.connection.send(JSON.stringify({
+                type: this.JOIN
+            }));
         }.bind(this);
 
         this.state.connection.onerror = function (error) {
@@ -26,7 +31,24 @@ class Room extends React.Component {
 
         //to receive the message from server
         this.state.connection.onmessage = function (e) {
-            console.log('message from server: ' + e.data);
+
+            const data = JSON.parse(e.data);
+
+            switch(data.type) {
+
+                case '!JOIN': {
+                    console.log(this.JOIN);
+                    break;
+                }
+
+                case '!MESSAGE': {
+                    console.log("receive message from others");
+                    this.addMessage(data.message);
+                    break;
+                }
+                default :
+                    break;
+            }
         }.bind(this);
 
         this.state.connection.onclose = function (e) {
@@ -41,12 +63,17 @@ class Room extends React.Component {
         this.handleWindowClose = this.handleWindowClose.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
+        this.sendMessage = this.sendMessage.bind(this);
+        this.addMessage = this.addMessage.bind(this);
 
         this.getRoom();
     }
 
     handleWindowClose() {
-        this.state.connection.send(this.EXIT);
+        this.state.connection.send(JSON.stringify({
+            type: this.EXIT
+        }));
     }
 
 
@@ -69,16 +96,50 @@ class Room extends React.Component {
             this.state.url + "/room/data/" + this.state.id
         ).done(function (data) {
             console.log(data);
-
-        });
+        }.bind(this));
 
     }
+
+    handleMessage(e) {
+        this.setState({message: e.target.value})
+    }
+
+    sendMessage(e) {
+        console.log("sendMessage");
+        console.log(this.state.message);
+
+        this.state.connection.send(JSON.stringify({
+            type: this.MESSAGE,
+            time: new Date().toLocaleString(),
+            sender: '',
+            message: this.state.message
+        }));
+
+    }
+
+    addMessage(message) {
+        $("#message_div").append('<p>' + message + '</p>');
+    }
+
 
     render() {
         return (
-            <h1>room</h1>
+
+            <div>
+                <h1>roomId : {this.state.id}</h1>
+                <div id={'message_div'}>
+                </div>
+                <label>
+                    message :
+                    <input id={'message_input'} type="text" value={this.state.message} onChange={this.handleMessage}/>
+                </label>
+                <button className="ui button" type={'button'} onClick={event => this.sendMessage(event)}>send</button>
+            </div>
+
         )
     }
+
+
 }
 
 ReactDOM.render(
