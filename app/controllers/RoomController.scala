@@ -10,14 +10,14 @@ import org.webjars.play.WebJarsUtil
 import play.api.libs.json.{Json, Writes}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-import services.RoomService
-import scala.collection.mutable.Map
+import services.{MessageService, RoomService}
 
+import scala.collection.mutable.Map
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class RoomController @Inject()(roomService: RoomService, cc: ControllerComponents, webJarsUtil: WebJarsUtil)(implicit actorSystem: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
+class RoomController @Inject()(roomService: RoomService, messageService: MessageService, cc: ControllerComponents, webJarsUtil: WebJarsUtil)(implicit actorSystem: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
 
   val dataWriter = new DataWriter()
   var roomActors = Seq()
@@ -55,7 +55,7 @@ class RoomController @Inject()(roomService: RoomService, cc: ControllerComponent
 
     ActorFlow.actorRef { out =>
 //      RoomActor.props(out, id)
-      RoomActor.props(out, id)
+      RoomActor.props(out, id, messageService)
     }
   }
   }
@@ -63,15 +63,14 @@ class RoomController @Inject()(roomService: RoomService, cc: ControllerComponent
 
 object RoomActor {
   var membersMap = Map[Int, List[ActorRef]]()
-  def props(out: ActorRef, id: Int) = Props(new RoomActor(out, id))
+  def props(out: ActorRef, id: Int, messageService: MessageService) = Props(new RoomActor(out, id, messageService))
 }
 
-class RoomActor(actorRef: ActorRef, id: Int) extends Actor {
+class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) extends Actor {
 
   val JOIN = "!JOIN"
   val EXIT = "!EXIT"
   val MESSAGE = "!MESSAGE"
-
 
   override def receive = {
 
@@ -127,9 +126,11 @@ class RoomActor(actorRef: ActorRef, id: Int) extends Actor {
 //              members.foreach(_ ! MESSAGE)
 
               // TODO: 여기서 toString으로 보내고 프론트엔드에서 JSON.parse를 해서 쓰는게 적절한 처리인가?
-              members.foreach(_ ! Json.obj("type" -> MESSAGE, "time" -> time, "sender" -> sender, "message" -> message).toString())
+              val messageObject = Json.obj("type" -> MESSAGE, "time" -> time, "sender" -> sender, "message" -> message)
+              members.foreach(_ ! messageObject.toString())
 
               // TODO: 여기서 해당 메시지 DB 저장 및 room에 join시 DB에서 메시지 읽어오게 해야 함
+              messageService.saveMessage(messageObject)
             }
             case None => {
               println("Room member is not exist")
