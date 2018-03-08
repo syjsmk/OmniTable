@@ -17,7 +17,7 @@ class RoomService @Inject()(roomDao: RoomDAO) {
 
   def makeRoom(name: String, userCount: Int): Future[Int] = {
 
-    val roomId = roomDao.create(Room(0, name))
+    val roomId = roomDao.insert(Room(0, name))
 
     roomId
   }

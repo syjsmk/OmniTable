@@ -25,9 +25,19 @@ class MessageDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implici
 
   }
 
-  override def create(entity: Message) = ???
+  override def insert(message: Message): Future[Int] = {
 
-  override def get(id: Int) = ???
+    db.run(
+      messages.returning(messages.map(_.id)) += message
+    )
+
+  }
+
+  override def get(id: Int): Future[Option[Message]] = {
+    Future {
+      None
+    }
+  }
 
   override def update(entity: Message) = ???
 

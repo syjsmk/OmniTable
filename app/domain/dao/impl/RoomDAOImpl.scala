@@ -31,7 +31,7 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     db.run(rooms.result)
   }
 
-  override def create(entity: Room): Future[Int] = {
+  override def insert(entity: Room): Future[Int] = {
     var prevRoomId = -1
     var id = -1
 
