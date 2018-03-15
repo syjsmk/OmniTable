@@ -15,6 +15,7 @@ import services.{MessageService, RoomService}
 import scala.collection.mutable.Map
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 @Singleton
 class RoomController @Inject()(roomService: RoomService, messageService: MessageService, cc: ControllerComponents, webJarsUtil: WebJarsUtil)(implicit actorSystem: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
@@ -91,7 +92,6 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
 
               val updatedMembers = actorRef :: members
               updatedMembers.foreach(actor => {
-//                actor ! JOIN
                 actor ! Json.obj("type" -> JOIN).toString()
               })
 
@@ -103,13 +103,30 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
               println("Room member is not exist")
 
               RoomActor.membersMap += (id -> List(actorRef))
-//              actorRef ! JOIN
               actorRef ! Json.obj("type" -> JOIN).toString()
             }
           }
 
 
-          println(RoomActor.membersMap)
+          // Future[Seq[Value]]를 제일 간단하게 가져오는 방법이라고 생각함. 동작은 함.
+          // 다만 getMessages()에 foreach를 했는데 거기서 또 messages가 나오는건 코드 의미적으로 좋지 않은 것 같음
+//          messageService.getMessages().foreach(messages => for(message <- messages) {
+//            println(message.message)
+//          })
+
+          // 이쪽 코드가 Future를 가져오는데 성공했을 경우라는 의미가 코드에 더 잘 나타나있다고 보임
+          messageService.getMessages().onComplete({
+            case Success(messages) => {
+              for(message <- messages) {
+//                println(message.message)
+                val messageObject = Json.obj("type" -> MESSAGE, "time" -> message.time, "sender" -> message.sender, "message" -> message.message)
+                actorRef ! messageObject.toString()
+              }
+            }
+            case Failure(e) => {
+              println("getMessage Failure : " + e)
+            }
+          })
 
         }
 

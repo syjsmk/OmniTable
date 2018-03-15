@@ -6,7 +6,7 @@ import domain.dao.MessageDAO
 import domain.model.Message
 import play.api.libs.json.JsObject
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class MessageService @Inject()(messageDAO: MessageDAO) {
 
@@ -19,6 +19,10 @@ class MessageService @Inject()(messageDAO: MessageDAO) {
       (message \ "sender").as[String],
       (message \ "message").as[String]
     ))
+  }
+
+  def getMessages(): Future[Seq[Message]] = {
+    messageDAO.getAll()
   }
 
 }
