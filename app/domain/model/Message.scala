@@ -6,18 +6,21 @@ import play.api.libs.json.Json
 
 
 
-case class Message(id: Int, time: String, sender: String, message: String)
+case class Message(id: Int, time: String, sender: String, message: String, roomId: Int)
 
 // Message별로 id를 가질 필요가 있나?
 class Messages(tag: Tag) extends Table[Message](tag, "message") {
 
-//  val rooms = TableQuery[Rooms]
+  val rooms = TableQuery[Rooms]
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def time = column[String]("time")
   def sender = column[String]("sender")
   def message = column[String]("message")
+  def roomId = column[Int]("roomId")
 
-  def * = (id, time, sender, message) <> ((Message.apply _).tupled, Message.unapply)
+  def * = (id, time, sender, message, roomId) <> ((Message.apply _).tupled, Message.unapply)
+
+  def room = foreignKey("room", id, rooms)(_.id, onUpdate = ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 }
 

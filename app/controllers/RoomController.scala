@@ -67,7 +67,7 @@ object RoomActor {
   def props(out: ActorRef, id: Int, messageService: MessageService) = Props(new RoomActor(out, id, messageService))
 }
 
-class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) extends Actor {
+class RoomActor(actorRef: ActorRef, roomId: Int, messageService: MessageService) extends Actor {
 
   val JOIN = "!JOIN"
   val EXIT = "!EXIT"
@@ -85,7 +85,7 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
         case JOIN => {
           println("!JOIN")
 
-          RoomActor.membersMap.get(id) match {
+          RoomActor.membersMap.get(roomId) match {
             case Some(members) => {
               //          println(members)
               //          println(members.size)
@@ -95,14 +95,14 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
                 actor ! Json.obj("type" -> JOIN).toString()
               })
 
-              RoomActor.membersMap = RoomActor.membersMap.updated(id, updatedMembers)
+              RoomActor.membersMap = RoomActor.membersMap.updated(roomId, updatedMembers)
 
             }
 
             case None => {
               println("Room member is not exist")
 
-              RoomActor.membersMap += (id -> List(actorRef))
+              RoomActor.membersMap += (roomId -> List(actorRef))
               actorRef ! Json.obj("type" -> JOIN).toString()
             }
           }
@@ -114,12 +114,14 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
 //            println(message.message)
 //          })
 
+
+
           // 이쪽 코드가 Future를 가져오는데 성공했을 경우라는 의미가 코드에 더 잘 나타나있다고 보임
-          messageService.getMessages().onComplete({
+          messageService.getMessages(roomId).onComplete({
             case Success(messages) => {
               for(message <- messages) {
 //                println(message.message)
-                val messageObject = Json.obj("type" -> MESSAGE, "time" -> message.time, "sender" -> message.sender, "message" -> message.message)
+                val messageObject = Json.obj("type" -> MESSAGE, "time" -> message.time, "sender" -> message.sender, "message" -> message.message, "roomId" -> roomId)
                 actorRef ! messageObject.toString()
               }
             }
@@ -138,15 +140,14 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
 
 //          println(s"time: $time, sender: $sender, message: $message")
 
-          RoomActor.membersMap.get(id) match {
+          RoomActor.membersMap.get(roomId) match {
             case Some(members) => {
 //              members.foreach(_ ! MESSAGE)
 
               // TODO: 여기서 toString으로 보내고 프론트엔드에서 JSON.parse를 해서 쓰는게 적절한 처리인가?
-              val messageObject = Json.obj("type" -> MESSAGE, "time" -> time, "sender" -> sender, "message" -> message)
+              val messageObject = Json.obj("type" -> MESSAGE, "time" -> time, "sender" -> sender, "message" -> message, "roomId" -> roomId)
               members.foreach(_ ! messageObject.toString())
 
-              // TODO: 여기서 해당 메시지 DB 저장 및 room에 join시 DB에서 메시지 읽어오게 해야 함
               messageService.saveMessage(messageObject)
             }
             case None => {
@@ -162,14 +163,14 @@ class RoomActor(actorRef: ActorRef, id: Int, messageService: MessageService) ext
 
           var changedMembers = List[ActorRef]()
 
-          RoomActor.membersMap.get(id) match {
+          RoomActor.membersMap.get(roomId) match {
             case Some(members) => {
               changedMembers = members.filterNot(user => user == actorRef)
 
               if(changedMembers.isEmpty) {
-                RoomActor.membersMap.remove(id)
+                RoomActor.membersMap.remove(roomId)
               } else {
-                RoomActor.membersMap.update(id, changedMembers)
+                RoomActor.membersMap.update(roomId, changedMembers)
               }
             }
 
