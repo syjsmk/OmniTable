@@ -57,9 +57,6 @@ class RobbyContainer extends React.Component {
         this.handleWindowClose = this.handleWindowClose.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
-
-        this.getRooms();
-
     }
 
     handleWindowClose() {
@@ -68,6 +65,7 @@ class RobbyContainer extends React.Component {
 
     componentDidMount() {
         console.log("didMount");
+        this.getRooms();
         window.addEventListener('beforeunload', this.handleWindowClose);
     }
 
@@ -138,6 +136,7 @@ class RobbyContainer extends React.Component {
 
     deleteRoom(event) {
         console.log('deleteRoom');
+        console.log('deleteRoom');
         console.log(this.state.selectedRoomId);
 
         $.ajax({
@@ -207,81 +206,92 @@ class RobbyContainer extends React.Component {
             margin: 0
         };
 
+        // return (
+        //     <form>
+        //
+        //         <div id={"user_info"} className={"ui fixed menu"}>
+        //             <div className={"ui container"}>
+        //                 <a href={"#"} className={"header item"}>
+        //                     user_info
+        //                 </a>
+        //                 <a href={"#"} className={"item"}>
+        //                     item
+        //                 </a>
+        //                 <div className={"ui simple dropdown item"}>
+        //                     dropdown
+        //                     <i className={"dropdown icon"}></i>
+        //                     <div className={"menu"}>
+        //                         <a className={"item"} href="#">Link Item</a>
+        //                         <a className={"item"} href="#">Link Item</a>
+        //                         <div className={"divider"}></div>
+        //                         <div className={"header"}>Header Item</div>
+        //                         <div className={"item"}>
+        //                             <i className={"dropdown icon"}></i>
+        //                             Sub Menu
+        //                             <div className={"menu"}>
+        //                                 <a className={"item"} href="#">Link Item</a>
+        //                                 <a className={"item"} href="#">Link Item</a>
+        //                             </div>
+        //                         </div>
+        //                         <a className={"item"} href="#">Link Item</a>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //
+        //         {/*Responsive item?  https://semantic-ui.com/examples/responsive.html  */}
+        //         {/*<div id={"rooms"} className={"ui content list"}>*/}
+        //         {/*empty slot for layout*/}
+        //         <div className={"ui menu"} style={roomsLayout}>
+        //         </div>
+        //         <div className={"ui relaxed fixed"}>
+        //             메뉴
+        //         </div>
+        //         <div id={"rooms"} className={"ui relaxed divided items"}>
+        //
+        //             {this.showRooms()}
+        //
+        //         </div>
+        //
+        //         <div id={"room_interaction"} className={"ui footer list"}>
+        //             <div id={'create'} className={"ui item"}>
+        //                 <label>
+        //                     Room name :
+        //                     <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
+        //                 </label>
+        //                 <button className="ui button" type={'button'} onClick={event => this.makeRoom(event)}>create</button>
+        //             </div>
+        //
+        //             <div id={'update'} className={"ui item"}>
+        //                 <label>
+        //                     selected Room name :
+        //                     <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+        //                 </label>
+        //                 <button className="ui button" type={'button'} onClick={this.updateRoom}>update</button>
+        //             </div>
+        //
+        //             <div id={'delete'} className={"ui item"}>
+        //                 <label>
+        //                     Room name for delete :
+        //                     <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
+        //                 </label>
+        //                 <button className="ui button" type={'button'} onClick={this.deleteRoom}>delete</button>
+        //             </div>
+        //         </div>
+        //
+        //     </form>
+        //
+        // );
+
+        // const robbyClass = "jumbotron d-flex align-items-center";
+        const robbyClass = "container";
+
         return (
-            <form>
-
-                <div id={"user_info"} className={"ui fixed menu"}>
-                    <div className={"ui container"}>
-                        <a href={"#"} className={"header item"}>
-                            user_info
-                        </a>
-                        <a href={"#"} className={"item"}>
-                            item
-                        </a>
-                        <div className={"ui simple dropdown item"}>
-                            dropdown
-                            <i className={"dropdown icon"}></i>
-                            <div className={"menu"}>
-                                <a className={"item"} href="#">Link Item</a>
-                                <a className={"item"} href="#">Link Item</a>
-                                <div className={"divider"}></div>
-                                <div className={"header"}>Header Item</div>
-                                <div className={"item"}>
-                                    <i className={"dropdown icon"}></i>
-                                    Sub Menu
-                                    <div className={"menu"}>
-                                        <a className={"item"} href="#">Link Item</a>
-                                        <a className={"item"} href="#">Link Item</a>
-                                    </div>
-                                </div>
-                                <a className={"item"} href="#">Link Item</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/*Responsive item?  https://semantic-ui.com/examples/responsive.html  */}
-                {/*<div id={"rooms"} className={"ui content list"}>*/}
-                {/*empty slot for layout*/}
-                <div className={"ui menu"} style={roomsLayout}>
-                </div>
-                <div className={"ui relaxed fixed"}>
-                    메뉴
-                </div>
-                <div id={"rooms"} className={"ui relaxed divided items"}>
-
-                    {this.showRooms()}
-
-                </div>
-
-                <div id={"room_interaction"} className={"ui footer list"}>
-                    <div id={'create'} className={"ui item"}>
-                        <label>
-                            Room name :
-                            <input type="text" value={this.state.roomName} onChange={this.handleRoomNameChange}/>
-                        </label>
-                        <button className="ui button" type={'button'} onClick={event => this.makeRoom(event)}>create</button>
-                    </div>
-
-                    <div id={'update'} className={"ui item"}>
-                        <label>
-                            selected Room name :
-                            <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
-                        </label>
-                        <button className="ui button" type={'button'} onClick={this.updateRoom}>update</button>
-                    </div>
-
-                    <div id={'delete'} className={"ui item"}>
-                        <label>
-                            Room name for delete :
-                            <input type="text" value={this.state.selectedRoomName} onChange={this.handleSelectedRoomNameChange}/>
-                        </label>
-                        <button className="ui button" type={'button'} onClick={this.deleteRoom}>delete</button>
-                    </div>
-                </div>
-
-            </form>
-
+            <div className={robbyClass}>
+                <NotificationBox />
+                <RoomTable />
+                <RoomInPanel />
+            </div>
         );
 
     }
