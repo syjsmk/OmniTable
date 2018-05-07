@@ -10,6 +10,8 @@ import play.api.libs.json._
 //
 //}
 
+//case class Room(id: Int, name: String, genre: String, description: String, userCount: Int, tag: List[String])
+
 case class Room(id: Int, name: String)
 
 class Rooms(tag: Tag) extends Table[Room](tag, "room") {

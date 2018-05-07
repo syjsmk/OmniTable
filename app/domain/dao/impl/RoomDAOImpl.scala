@@ -11,6 +11,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
+import scala.util.control.Breaks._
+
 
 
 class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends RoomDAO {
@@ -22,27 +24,33 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
 
   val rooms = TableQuery[Rooms]
 
+  val ROOM_NAME = "name"
+
   override def getAll(): Future[Seq[Room]] = {
 
     db.run(rooms.result)
   }
 
   override def create(entity: Room): Future[Int] = {
-    var prevRoomId = 0
-    var id = 0
+    var prevRoomId = -1
+    var id = -1
 
     db.run(rooms.result).map(seq => {
 
-      seq.foreach(room => {
-        if(room.id - prevRoomId > 1) {
-          id = prevRoomId + 1
-        } else {
-          id = room.id + 1
-        }
+      breakable{
+        for(room <- seq) {
 
-        prevRoomId = room.id
-      })
-      
+          if(room.id - prevRoomId > 1) {
+            id = prevRoomId + 1
+            break
+          } else {
+            id = room.id + 1
+          }
+
+          prevRoomId = room.id
+        }
+      }
+
       db.run(rooms += Room(id, entity.name))
 
       id
@@ -58,12 +66,8 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
 
   override def update(entity: Room): Future[Option[Room]] = {
 
-    println("update")
-
     val q = for(room <- rooms if room.id === entity.id) yield room.name
 
-    println(s"q : $q")
-    println(s"entity.name: $entity")
     val updateAction = q.update(entity.name)
     db.run(updateAction)
 
@@ -71,5 +75,22 @@ class RoomDAOImpl @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit e
     this.get(entity.id)
   }
 
-  override def delete(id: Int) = ???
+  override def update(id: Int, attrName: String, attrValue: Any): Future[Option[Room]] = {
+
+    attrName match {
+      case ROOM_NAME => {
+        val q = rooms.filter(_.id === id).map(room => {
+          room.name
+        }).update(attrValue.toString)
+        db.run(q)
+      }
+    }
+
+    this.get(id)
+  }
+
+  override def delete(id: Int): Future[Int] = {
+    db.run(rooms.filter(_.id === id).delete)
+  }
+
 }
