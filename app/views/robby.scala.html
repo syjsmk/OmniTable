@@ -1,15 +1,21 @@
 @(webJarsUtil: org.webjars.play.WebJarsUtil)
 
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<link lang="en">
     @Html(webJarsUtil.script("react.js"))
     @Html(webJarsUtil.script("react-dom.js"))
     @Html(webJarsUtil.script("jquery.js"))
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body>
     <div id="root"></div>
+    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/Constants.js")'></script>
     <script type="text/javascript" src='@routes.Assets.versioned("javascripts/main.js")'></script>
+      <script type='text/javascript' src='@routes.Assets.versioned("javascripts/NotificationBox.js")'></script>
+      <script type='text/javascript' src='@routes.Assets.versioned("javascripts/RoomTable.js")'></script>
+      <script type='text/javascript' src='@routes.Assets.versioned("javascripts/RoomInPanel.js")'></script>
     <script type='text/javascript' src='@routes.Assets.versioned("javascripts/Robby.js")'></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   </body>
 </html>
