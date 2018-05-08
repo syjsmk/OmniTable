@@ -2,18 +2,12 @@ package services
 
 import javax.inject.Inject
 
-import akka.actor.FSM.Failure
-import akka.actor.Status.Success
 import domain.dao.RoomDAO
-import domain.dao.impl.RoomDAOImpl
 import domain.model.Room
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-// RoomDAO가 아니라 RoomDAOImpl을 DI 하게 되면 그게 의미가 있나?
-class RoomService @Inject()(roomDao: RoomDAOImpl) {
+class RoomService @Inject()(roomDao: RoomDAO) {
 
   def getRoom(id: Int): Future[Option[Room]] = {
 
@@ -23,7 +17,7 @@ class RoomService @Inject()(roomDao: RoomDAOImpl) {
 
   def makeRoom(name: String, userCount: Int): Future[Int] = {
 
-    val roomId = roomDao.create(Room(0, name))
+    val roomId = roomDao.insert(Room(0, name))
 
     roomId
   }

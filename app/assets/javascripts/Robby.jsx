@@ -51,6 +51,7 @@ class RobbyContainer extends React.Component {
         this.makeRoom = this.makeRoom.bind(this);
         this.showRooms = this.showRooms.bind(this);
         this.clickRoom = this.clickRoom.bind(this);
+        this.joinRoom = this.joinRoom.bind(this);
         this.updateRoom = this.updateRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
 
@@ -167,7 +168,7 @@ class RobbyContainer extends React.Component {
 
                             <div className={"content"}>
                                 <text className={"header"}>{room.name}</text>
-                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.id : {room.id}</div>
+                                <div id={room.id} className={"ui item"} name={room.name} onClick={this.joinRoom}>room.id : {room.id}</div>
                                 <div id={room.id} className={"ui item"} name={room.name} onClick={this.clickRoom}>room.name : {room.name}</div>
                             </div>
                         </div>
@@ -180,6 +181,11 @@ class RobbyContainer extends React.Component {
             return <h1>"loading"</h1>;
         }
 
+    }
+
+    joinRoom(event) {
+        this.clickRoom(event);
+        window.location.href = this.state.url + "/room/" + event.target.getAttribute('id');
     }
 
     clickRoom(event) {
@@ -195,9 +201,6 @@ class RobbyContainer extends React.Component {
             selectedRoomId: event.target.getAttribute('id'),
             selectedRoomName: event.target.getAttribute('name')
         });
-
-        window.location.href = this.state.url + "/room/" + event.target.getAttribute('id');
-
     }
 
     render() {
