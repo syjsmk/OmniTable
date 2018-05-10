@@ -7,10 +7,13 @@ class RoomTable extends React.Component {
         this.ROBBY_WEBSOCKET_URL = ROBBY_WEBSOCKET_URL;
 
         this.state = {
-            roomInfo: []
+            roomInfo: [],
+            selectedRoomId: 0,
+            selectedRoomName: ""
         };
 
         // this.makeTable = this.makeTable.bind(this);
+        this.clickRoom = this.clickRoom.bind(this);
     }
 
     getRooms() {
@@ -21,6 +24,20 @@ class RoomTable extends React.Component {
             this.setState({roomInfo: data});
         }.bind(this));
     };
+
+    clickRoom(event) {
+
+        console.log("clickRoom");
+        console.log(event.target.parentNode.getAttribute('id'));
+
+        this.setState({
+            selectedRoomId: event.target.getAttribute('id'),
+            selectedRoomName: event.target.getAttribute('name')
+        });
+
+        window.location.href = this.URL + "/room/" + event.target.parentNode.getAttribute('id');
+
+    }
 
     componentDidMount() {
         // console.log(this.state.roomInfo);
@@ -50,12 +67,13 @@ class RoomTable extends React.Component {
 
         let rows = [];
         for ( let roomInfo of roomInfos ) {
+
             let row = [];
             for ( let k in roomInfo ) {
                 // TODO: need key to optimize arr rendering performance
                 row.push(<td>{roomInfo[k]}</td>);
             }
-            rows.push(<tr>{row}</tr>);
+            rows.push(<tr id={roomInfo.id} name={roomInfo.name} onClick={this.clickRoom}>{row}</tr>);
         }
         return (rows);
     };

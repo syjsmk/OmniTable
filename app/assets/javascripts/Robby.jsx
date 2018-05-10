@@ -50,8 +50,6 @@ class RobbyContainer extends React.Component {
         this.handleSelectedRoomNameChange = this.handleSelectedRoomNameChange.bind(this);
         this.makeRoom = this.makeRoom.bind(this);
         this.showRooms = this.showRooms.bind(this);
-        this.clickRoom = this.clickRoom.bind(this);
-        this.joinRoom = this.joinRoom.bind(this);
         this.updateRoom = this.updateRoom.bind(this);
         this.deleteRoom = this.deleteRoom.bind(this);
 
@@ -182,26 +180,7 @@ class RobbyContainer extends React.Component {
         }
 
     }
-
-    joinRoom(event) {
-        this.clickRoom(event);
-        window.location.href = this.state.url + "/room/" + event.target.getAttribute('id');
-    }
-
-    clickRoom(event) {
-
-        console.log("clickRoom");
-        // console.log(event.target);
-        // console.log(event.target.getAttribute('id'));
-        // console.log(event.target.getAttribute('name'));
-        // console.log(this.state.selectedRoomId);
-        // console.log(this.state.selectedRoomName);
-
-        this.setState({
-            selectedRoomId: event.target.getAttribute('id'),
-            selectedRoomName: event.target.getAttribute('name')
-        });
-    }
+    
 
     render() {
 
