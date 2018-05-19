@@ -35,9 +35,9 @@ class RobbyController @Inject()(roomDAO: RoomDAOImpl, roomService: RoomService, 
     * a path of `/`.
     */
 
-  def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.robby(webJarsUtil))
-  }
+//  def index() = Action { implicit request: Request[AnyContent] =>
+//    Ok(views.html.robby(webJarsUtil))
+//  }
 
   def getRooms() = Action.async {
     val rooms = roomService.getRooms()
