@@ -12,9 +12,11 @@ class Room extends React.Component {
         // 선택한 room의 id는 room.scala.html에서 바인딩된 값을 사용함
         this.state = {
             url: this.constants.URL,
-            id: roomId,
+            // id: roomId,
+            id: this.props.roomId,
             message: '',
-            connection: new WebSocket("ws://localhost:9000/room/" + roomId + "/websocket")
+            // connection: new WebSocket("ws://localhost:9000/room/" + roomId + "/websocket")
+            connection: new WebSocket("ws://localhost:9000/room/" + this.props.roomId + "/websocket")
         };
 
         this.state.connection.onopen = function () {
@@ -80,7 +82,11 @@ class Room extends React.Component {
     componentDidMount() {
         console.log("didMount");
         window.addEventListener('beforeunload', this.handleWindowClose);
+        window.addEventListener('popstate', function(event) {
+            history.back();
+        });
     }
+
 
     componentWillUnmount() {
         console.log("unmount");

@@ -73,7 +73,8 @@ class RoomTable extends React.Component {
                 // TODO: need key to optimize arr rendering performance
                 row.push(<td>{roomInfo[k]}</td>);
             }
-            rows.push(<tr id={roomInfo.id} name={roomInfo.name} onClick={this.clickRoom}>{row}</tr>);
+            // rows.push(<tr id={roomInfo.id} name={roomInfo.name} onClick={this.clickRoom}>{row}</tr>);
+            rows.push(<tr id={roomInfo.id} name={roomInfo.name} onClick={this.props.enterRoom}>{row}</tr>);
         }
         return (rows);
     };
@@ -128,7 +129,7 @@ class RoomTable extends React.Component {
                             <tbody>
                             {body}
                             </tbody>
-                        </table><table></table>
+                        </table>
                     </div>
                     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                         <table className="table">

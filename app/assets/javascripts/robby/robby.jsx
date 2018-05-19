@@ -271,7 +271,7 @@ class Robby extends React.Component {
         return (
             <div className={robbyClass}>
                 <NotificationBox />
-                <RoomTable />
+                <RoomTable enterRoom={this.props.enterRoom}/>
                 <RoomInPanel />
             </div>
         );
