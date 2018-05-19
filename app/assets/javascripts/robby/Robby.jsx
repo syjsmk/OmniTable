@@ -1,5 +1,5 @@
 
-class RobbyContainer extends React.Component {
+class Robby extends React.Component {
 
     constructor(props) {
         super(props);
@@ -282,6 +282,6 @@ class RobbyContainer extends React.Component {
 
 
 ReactDOM.render(
-    <RobbyContainer />,
+    <Robby />,
     document.getElementById('root')
 );

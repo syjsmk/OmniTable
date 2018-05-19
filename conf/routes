@@ -4,8 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.RobbyController.index
-GET     /robby                      controllers.RobbyController.index
+GET     /                           controllers.AppController.index
+#GET     /robby                      controllers.RobbyController.index
 GET     /robby/rooms                controllers.RobbyController.getRooms()
 GET     /robby/websocket            controllers.RobbyController.roomsWebSocket()
 
